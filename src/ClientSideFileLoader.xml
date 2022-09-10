@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget id="caffcode.clientsidefileloader.ClientSideFileLoader" pluginWidget="true" needsEntityContext="true" offlineCapable="true"
+        supportedPlatform="Web"
+        xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd">
+    <name>Client Side File Loader</name>
+    <description>Load files client side and let Mendix do things with it</description>
+    <icon/>
+    <properties>
+        <propertyGroup caption="General">
+            <propertyGroup caption="Data">
+                <property key="dataObjectURLS" type="attribute" required="true">
+                    <caption>Objects</caption>
+                    <description>This is the attribute that is used by the widget to store all uploaded files. This is used in the nanoflows to create objects. When this attribute is readOnly (editable = false) the dropzone will be disabled.
+
+Format: obj1|obj2|...
+Object format: base64 encoded string, which is a JSON that contains: name, size, type, objectURL</description>
+                    <attributeTypes>
+                        <attributeType name="String" />
+                    </attributeTypes>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Restrictions">
+                <property key="maxSize" type="expression" required="false" defaultValue="">
+                    <caption>Max size</caption>
+                    <description>Max size in bytes</description>
+                    <returnType type="Integer" />
+                </property>
+                <property key="maxFiles" type="expression" required="false" defaultValue="">
+                    <caption>Max files</caption>
+                    <description>Max amount of files.
+
+Tip: This is a dynamic value, so you can change this, based on the amount of files that are already uploaded.</description>
+                    <returnType type="Integer" />
+                </property>
+                <property key="acceptList" type="object" isList="true" required="false">
+                    <caption>Accept</caption>
+                    <description>This is a list of file types that can be accepted.
+
+More info: https://developer.mozilla.org/en-US/docs/Web/API/window/showOpenFilePicker#examples</description>
+                    <properties>
+                        <propertyGroup caption="Accept">
+                            <property key="acceptGroupName" type="string" required="true" defaultValue="">
+                                <caption>Group</caption>
+                                <description>This is the group name, for example 'image/*' or 'text/html'</description>
+                            </property>
+                            <property key="acceptExtensions" type="string" required="false" defaultValue="">
+                                <caption>Extensions</caption>
+                                <description>(optional) This is a list of extensions, separated with a '|', for example '.png' or '.htm|.html'</description>
+                            </property>
+                        </propertyGroup>
+                    </properties>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Widgets">
+                <property key="areaDropZone" type="widgets" required="true">
+                    <caption>Dropzone (required)</caption>
+                    <description>The dropzone</description>
+                </property>
+                <property key="areaDropZoneDisabled" type="widgets" required="false">
+                    <caption>Dropzone disabled (optional)</caption>
+                    <description>The dropzone when it is disabled</description>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+        <propertyGroup caption="Actions">
+            <propertyGroup caption="Drop">
+                <property key="onDropAction" type="action" required="false">
+                    <caption>On Drop</caption>
+                    <description>Action to be executed when you have dropped files (or selected). It makes the most sense to execute a Nanoflow here.</description>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+        <propertyGroup caption="Misc">
+            <propertyGroup caption="Filter internal">
+                <property key="filterInternal" type="boolean" defaultValue="true">
+                    <caption>Filter</caption>
+                    <description>The widget keeps a list of files that are dropped in the dropzone (this is needed to clean up the objectURL list when unloading the widget). When you try to drop a file that has already been dropped, it will block it. If you like to have full control, you can disable this.</description>
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="MIME">
+                <property key="intenseMimeLookup" type="boolean" defaultValue="true">
+                    <caption>Intense MIME lookup</caption>
+                    <description>The browser/widget will try to determine the MIME type (e.g. 'image/png') of the dropped file. If it cannot determine the mime type automatically, the widget will try to read the file client side (using magic-bytes). This can slow down your widget significantly if the files are big. You can switch it off if necessary.</description>
+                </property>
+            </propertyGroup>
+        </propertyGroup>
+        <propertyGroup caption="Common">
+            <systemProperty key="Visibility"/>
+        </propertyGroup>
+    </properties>
+</widget>
