@@ -1,11 +1,16 @@
-import { md5 } from "super-fast-md5";
 import { lookup } from "mrmime";
 import { filetypemime } from "magic-bytes.js";
 
 export type FileObject = {
     file: File;
-    hash: string | null;
     objectURL: string | null;
+};
+
+export type FileObjectReturnType = {
+    objectURL: string;
+    fileName: string;
+    fileType: string;
+    fileSize: number;
 };
 
 interface CreateFileOptions {
@@ -85,23 +90,14 @@ const readFileAsBuffer = async (file: File, debug = false): Promise<ArrayBuffer>
 
 export const createFileObjects = (
     files: File[],
-    { calculateHash, debug, intenseMimeLookup }: CreateFileOptions
+    { debug, intenseMimeLookup }: CreateFileOptions
 ): Promise<FileObject[]> =>
     Promise.all(
         files.map(async file => {
-            const fileObject: FileObject = { file, hash: null, objectURL: null };
-            let buf: ArrayBuffer | null = null;
-
-            if (calculateHash) {
-                buf = await readFileAsBuffer(file, debug);
-                const hash = md5(new TextDecoder().decode(buf));
-                fileObject.hash = hash;
-            }
+            const fileObject: FileObject = { file, objectURL: null };
 
             if (!file.type && intenseMimeLookup) {
-                if (!buf) {
-                    buf = await readFileAsBuffer(file, debug);
-                }
+                const buf = await readFileAsBuffer(file, debug);
                 const bytes = new Uint8Array(buf);
                 const mime = filetypemime(bytes as unknown as any[]);
                 let type: string | null = null;
@@ -132,3 +128,13 @@ export const createFileObjects = (
 
 export const compareFileObjects = (obj1: FileObject, obj2: FileObject): boolean =>
     obj1.file.name === obj2.file.name && obj1.file.size === obj2.file.size && obj1.file.type === obj2.file.type;
+
+export const createFileArrayJSON = (objs: FileObject[]): string =>
+    JSON.stringify(
+        objs.map<FileObjectReturnType>(obj => ({
+            objectURL: obj.objectURL || "",
+            fileName: obj.file.name,
+            fileType: obj.file.type,
+            fileSize: obj.file.size
+        }))
+    );

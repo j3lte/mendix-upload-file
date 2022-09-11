@@ -22,14 +22,16 @@ export interface ClientSideFileLoaderContainerProps {
     class: string;
     style?: CSSProperties;
     tabIndex?: number;
-    dataObjectURLS: EditableValue<string>;
-    maxSize?: DynamicValue<Big>;
-    maxFiles?: DynamicValue<Big>;
-    acceptList: AcceptListType[];
+    uploadFilesStringAttribute: EditableValue<string>;
+    onDropAction?: ActionValue;
     areaDropZone: ReactNode;
     areaDropZoneDisabled?: ReactNode;
-    onDropAction?: ActionValue;
-    filterInternal: boolean;
+    onErrorStringAttribute?: EditableValue<string>;
+    onDropError?: ActionValue;
+    maxSize?: DynamicValue<Big>;
+    minSize?: DynamicValue<Big>;
+    maxFiles?: DynamicValue<Big>;
+    acceptList: AcceptListType[];
     intenseMimeLookup: boolean;
 }
 
@@ -38,13 +40,15 @@ export interface ClientSideFileLoaderPreviewProps {
     style: string;
     styleObject?: CSSProperties;
     readOnly: boolean;
-    dataObjectURLS: string;
-    maxSize: string;
-    maxFiles: string;
-    acceptList: AcceptListPreviewType[];
+    uploadFilesStringAttribute: string;
+    onDropAction: {} | null;
     areaDropZone: { widgetCount: number; renderer: ComponentType<{ caption?: string }> };
     areaDropZoneDisabled: { widgetCount: number; renderer: ComponentType<{ caption?: string }> };
-    onDropAction: {} | null;
-    filterInternal: boolean;
+    onErrorStringAttribute: string;
+    onDropError: {} | null;
+    maxSize: string;
+    minSize: string;
+    maxFiles: string;
+    acceptList: AcceptListPreviewType[];
     intenseMimeLookup: boolean;
 }

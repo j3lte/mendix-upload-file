@@ -1,115 +1,79 @@
-import { ReactNode, createElement, useCallback, useMemo, useEffect } from "react";
+import { ReactNode, createElement, useMemo, useCallback } from "react";
 import { FileRejection, DropEvent } from "react-dropzone";
-import { useUnmount, useList } from "react-use";
-import { getDynamicValueString, getDynamicValueBig } from "./util/data";
-
-import "./ui/ClientSideFileLoader.scss";
 
 import { ClientSideFileLoaderContainerProps } from "../typings/ClientSideFileLoaderProps";
 
 import { FileDropZone, Zones } from "./components/FileDropZone";
-import { compareFileObjects, FileObject } from "./util/fileobjects";
-import { acceptListToAccept } from "./util/accept";
-import { executeAction } from "./util/action";
 
-// eslint-disable-next-line no-empty-pattern
+import { getDynamicValueBig, getDynamicValueString } from "./util/data";
+import { acceptListToAccept } from "./util/accept";
+import { createFileArrayJSON, FileObject } from "./util/fileobjects";
+import { executeAction } from "./util/action";
+import { createErrorArrayJSON } from "./util/error";
+import { ValueStatus } from "mendix";
+
 export function ClientSideFileLoader({
-    dataObjectURLS,
+    uploadFilesStringAttribute,
     maxSize: maxSizeValue,
+    minSize: minSizeValue,
     maxFiles: maxFilesValue,
-    acceptList,
     onDropAction,
+    acceptList,
+    onErrorStringAttribute,
+    onDropError,
     class: className,
     areaDropZone,
     areaDropZoneDisabled,
     intenseMimeLookup,
     style
 }: ClientSideFileLoaderContainerProps): ReactNode {
-    const dataObjectURLSString = getDynamicValueString(dataObjectURLS);
+    const uploadFileStringValue = getDynamicValueString(uploadFilesStringAttribute);
     const maxSize = getDynamicValueBig(maxSizeValue);
+    const minSize = getDynamicValueBig(minSizeValue);
     const maxFiles = getDynamicValueBig(maxFilesValue);
     const accept = acceptListToAccept(acceptList);
-    const disabled = dataObjectURLS.readOnly;
-
-    const [objectList, { push }] = useList<FileObject>([]);
-
-    const objectURLList = useMemo(
-        () =>
-            objectList
-                .filter(o => o.objectURL)
-                .map(o => {
-                    return btoa(
-                        JSON.stringify({
-                            name: o.file.name,
-                            type: o.file.type,
-                            size: o.file.size,
-                            url: o.objectURL
-                        })
-                    );
-                })
-                .sort()
-                .join("|"),
-        [objectList]
+    const zones: Zones = useMemo(
+        () => ({ dropZone: areaDropZone, dropZoneDisabled: areaDropZoneDisabled }),
+        [areaDropZone, areaDropZoneDisabled]
     );
+    const disabled =
+        uploadFileStringValue === null ||
+        uploadFileStringValue !== "" ||
+        uploadFilesStringAttribute.readOnly ||
+        maxFiles === 0;
 
-    const executeOnDrop = useCallback(() => {
-        setTimeout(() => {
-            executeAction(onDropAction);
-        }, 500);
-    }, [onDropAction]);
-
-    useUnmount(() => {
-        // We need to release object URLs when unmounting, so we don't keep files in browser memory
-        objectList.forEach(o => {
-            try {
-                if (o.objectURL) {
-                    URL.revokeObjectURL(o.objectURL);
-                }
-            } catch (_error) {
-                // Ignore
-            }
-        });
-    });
-
-    // useEffect(() => {
-    //     console.log("change from dataObjectURLSString: ", dataObjectURLSString);
-    // }, [dataObjectURLSString]);
-
-    // useEffect(() => {
-    //     console.log("change from objectURLList: ", objectURLList);
-    // }, [objectURLList]);
-
-    useEffect(() => {
-        if (dataObjectURLSString === null || dataObjectURLSString === objectURLList || !objectURLList) {
-            return;
-        }
-        dataObjectURLS.setTextValue(objectURLList);
-    }, [objectURLList, dataObjectURLSString, dataObjectURLS]);
-
-    const zones: Zones = { dropZone: areaDropZone, dropZoneDisabled: areaDropZoneDisabled };
     const onDrop = useCallback(
-        (acceptedFiles: FileObject[], _fileRejections: FileRejection[], _event: DropEvent): void => {
-            if (acceptedFiles.length === 0) {
+        (acceptedFiles: FileObject[], fileRejections: FileRejection[], _event: DropEvent): void => {
+            if (disabled) {
                 return;
             }
-            const newFiles = acceptedFiles
-                .filter(af => !objectList.find(oL => compareFileObjects(oL, af)))
-                .map(nf => {
-                    nf.objectURL = URL.createObjectURL(nf.file);
-                    return nf;
-                });
-            if (newFiles.length === 0) {
-                return;
-            }
-            push(...newFiles);
-            executeOnDrop();
-        },
-        [executeOnDrop, objectList, push]
-    );
 
-    if (dataObjectURLSString === null) {
-        return null;
-    }
+            if (fileRejections.length > 0) {
+                if (
+                    onErrorStringAttribute &&
+                    !onErrorStringAttribute.readOnly &&
+                    onErrorStringAttribute.status === ValueStatus.Available
+                ) {
+                    onErrorStringAttribute.setValue(createErrorArrayJSON(fileRejections));
+                }
+                executeAction(onDropError);
+            }
+
+            let fileArray: FileObject[] = acceptedFiles;
+            if (typeof maxFiles === "number" && maxFiles > -1) {
+                fileArray = fileArray.slice(0, maxFiles);
+            }
+            if (fileArray.length > 0) {
+                fileArray.forEach(fileObject => {
+                    fileObject.objectURL = URL.createObjectURL(fileObject.file);
+                });
+                const json = createFileArrayJSON(fileArray);
+                uploadFilesStringAttribute.setValue(json);
+                executeAction(onDropAction, {});
+            }
+        },
+        [disabled, maxFiles, onDropAction, onDropError, onErrorStringAttribute, uploadFilesStringAttribute]
+    );
 
     const dropzoneOpts = {
         disabled,
@@ -117,6 +81,7 @@ export function ClientSideFileLoader({
         style,
         maxFiles,
         maxSize,
+        minSize,
         onDrop,
         zones,
         accept,

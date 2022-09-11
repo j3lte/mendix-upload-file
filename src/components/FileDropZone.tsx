@@ -13,6 +13,7 @@ export interface FileDropZoneProps {
     accept?: Accept;
     maxFiles?: number;
     maxSize?: number;
+    minSize?: number;
     disabled?: boolean;
     className?: string;
     style?: CSSProperties;
@@ -26,6 +27,7 @@ export const FileDropZone: FC<FileDropZoneProps> = ({
     accept,
     maxFiles,
     maxSize,
+    minSize,
     disabled,
     className,
     style,
@@ -44,7 +46,7 @@ export const FileDropZone: FC<FileDropZoneProps> = ({
     );
 
     const { getRootProps, getInputProps, isFocused, isDragActive, isDragAccept, isDragReject, isFileDialogActive } =
-        useDropzone({ onDrop: onDropInternal, accept, maxSize, multiple, disabled });
+        useDropzone({ onDrop: onDropInternal, accept, maxSize, minSize, multiple, disabled, maxFiles });
 
     return (
         <div

@@ -7,5 +7,5 @@ export function preview({}: ClientSideFileLoaderPreviewProps): ReactElement {
 }
 
 export function getPreviewCss(): string {
-    return require("./ui/ClientSideFileLoader.scss");
+    return "";
 }
