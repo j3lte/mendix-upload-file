@@ -3,13 +3,20 @@
         supportedPlatform="Web"
         xmlns="http://www.mendix.com/widget/1.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.mendix.com/widget/1.0/ ../node_modules/mendix/custom_widget.xsd">
-    <name>Client Side File Loader</name>
+    <name>Client Side File Loader (1.0.0)</name>
     <description>Load files client side and let Mendix do things with it</description>
     <icon/>
     <properties>
         <propertyGroup caption="General">
-            <propertyGroup caption="Step 1: Data">
-                <property key="uploadFilesStringAttribute" type="attribute" required="true">
+            <propertyGroup caption="Scenario 1: CustomEvent">
+                <property key="dataCustomEventKey" type="expression" required="false" defaultValue="">
+                    <caption>Custom Event</caption>
+                    <description>The key of the custom event. You can send a Custom Event to the document to be picked up by a Custom Event Listener. The upside is that you do not have to use string attributes to receive files. See "Upload String" for the format that is sent in the 'event.detail' of the Event</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Scenario 2: Attribute + Action">
+                <property key="uploadFilesStringAttribute" type="attribute" required="false">
                     <caption>Upload String</caption>
                     <description>The widget will use this attribute to send files to Mendix. It does this by creating a JSON with fileObjects.
 
@@ -20,8 +27,6 @@ Note: This attribute is checked by the widget, as long as it is filled, the drop
                          <attributeType name="String" />
                     </attributeTypes>
                 </property>
-            </propertyGroup>
-            <propertyGroup caption="Step 2: On Drop">
                 <property key="onDropAction" type="action" required="false">
                     <caption>On Drop</caption>
                     <description>Action to be executed when you have dropped files (or selected). This is executed AFTER is has set the Upload String property.
@@ -41,7 +46,14 @@ It makes the most sense to execute a Nanoflow here.</description>
             </propertyGroup>
         </propertyGroup>
         <propertyGroup caption="Error">
-            <propertyGroup caption="Attribute">
+            <propertyGroup caption="Scenario 1: CustomEvent">
+                <property key="errorCustomEventKey" type="expression" required="false" defaultValue="">
+                    <caption>Custom Event</caption>
+                    <description>The key of the custom event. You can send a Custom Event to the document to be picked up by a Custom Event Listener. The upside is that you do not have to use string attributes to receive files. See "Error String" for the format that is sent in the 'event.detail' of the Event</description>
+                    <returnType type="String" />
+                </property>
+            </propertyGroup>
+            <propertyGroup caption="Scenario 2: Attribute + Action">
                 <property key="onErrorStringAttribute" type="attribute" required="false">
                     <caption>Error String</caption>
                     <description>Similar to the 'Upload String' (General), the widget will create a JSON string with error information. If you do not define this attribute, the widget will not produce any errors.
@@ -52,8 +64,6 @@ Format: [{ fileName: string, fileType: string, fileSize: number, errors: [{ code
                          <attributeType name="String" />
                     </attributeTypes>
                 </property>
-            </propertyGroup>
-            <propertyGroup caption="Action">
                 <property key="onDropError" type="action" required="false">
                     <caption>On Drop Error</caption>
                     <description>Action to be executed when the dropzone has errors. This is executed AFTER is has set the Error String property.

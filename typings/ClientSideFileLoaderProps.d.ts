@@ -22,10 +22,12 @@ export interface ClientSideFileLoaderContainerProps {
     class: string;
     style?: CSSProperties;
     tabIndex?: number;
-    uploadFilesStringAttribute: EditableValue<string>;
+    dataCustomEventKey?: DynamicValue<string>;
+    uploadFilesStringAttribute?: EditableValue<string>;
     onDropAction?: ActionValue;
     areaDropZone: ReactNode;
     areaDropZoneDisabled?: ReactNode;
+    errorCustomEventKey?: DynamicValue<string>;
     onErrorStringAttribute?: EditableValue<string>;
     onDropError?: ActionValue;
     maxSize?: DynamicValue<Big>;
@@ -40,10 +42,12 @@ export interface ClientSideFileLoaderPreviewProps {
     style: string;
     styleObject?: CSSProperties;
     readOnly: boolean;
+    dataCustomEventKey: string;
     uploadFilesStringAttribute: string;
     onDropAction: {} | null;
     areaDropZone: { widgetCount: number; renderer: ComponentType<{ caption?: string }> };
     areaDropZoneDisabled: { widgetCount: number; renderer: ComponentType<{ caption?: string }> };
+    errorCustomEventKey: string;
     onErrorStringAttribute: string;
     onDropError: {} | null;
     maxSize: string;

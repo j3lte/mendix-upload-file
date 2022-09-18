@@ -7,7 +7,8 @@ export type FileObject = {
 };
 
 export type FileObjectReturnType = {
-    objectURL: string;
+    objectURL?: string;
+    file?: File;
     fileName: string;
     fileType: string;
     fileSize: number;
@@ -129,12 +130,12 @@ export const createFileObjects = (
 export const compareFileObjects = (obj1: FileObject, obj2: FileObject): boolean =>
     obj1.file.name === obj2.file.name && obj1.file.size === obj2.file.size && obj1.file.type === obj2.file.type;
 
-export const createFileArrayJSON = (objs: FileObject[]): string =>
-    JSON.stringify(
-        objs.map<FileObjectReturnType>(obj => ({
-            objectURL: obj.objectURL || "",
-            fileName: obj.file.name,
-            fileType: obj.file.type,
-            fileSize: obj.file.size
-        }))
-    );
+export const fileObjectArray = (objs: FileObject[]): FileObjectReturnType[] =>
+    objs.map(obj => ({
+        objectURL: obj.objectURL || "",
+        fileName: obj.file.name,
+        fileType: obj.file.type,
+        fileSize: obj.file.size
+    }));
+
+export const createFileArrayJSONString = (objs: FileObject[]): string => JSON.stringify(fileObjectArray(objs));
