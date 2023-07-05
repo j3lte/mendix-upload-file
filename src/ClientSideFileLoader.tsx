@@ -36,9 +36,7 @@ export function ClientSideFileLoader({
 
     const onDataCustomEventKey = getDynamicValueString(dataCustomEventKey);
     const onErrorCustomEventKey = getDynamicValueString(errorCustomEventKey);
-    const [disabled, _error] = useIsDisabled(uploadFilesStringAttribute, dataCustomEventKey, maxFiles);
-
-    console.log(disabled, _error);
+    const [disabled] = useIsDisabled(uploadFilesStringAttribute, dataCustomEventKey, maxFiles);
 
     const accept = acceptListToAccept(acceptList);
     const zones: Zones = useMemo(
