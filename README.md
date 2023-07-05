@@ -1,5 +1,9 @@
 ## ClientSideFileLoader
+
 [Load files client side and let Mendix do things with it]
+
+> This widget is not production ready yet, but a showcase how we could do File Dropper like uploads using Pluggable Widgets. This is part of a module that you can download in the **module/VX.X.X** folder.
+> The MODULE is created in Mendix 9.6.12, it should work in later versions as well, as it does not rely on any specific Mendix capabilities, only some client API's that are still supported in MX9 (LTS) and probabl MX10
 
 ## Features
 [feature highlights]
